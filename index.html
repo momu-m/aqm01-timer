@@ -501,7 +501,7 @@
           if ("wakeLock" in navigator && navigator.wakeLock && navigator.wakeLock.request) {
             navigator.wakeLock.request("screen").then(function (lock) {
               wakeLock = lock;
-              wakeBadge.textContent = "Bildschirm bleibt wach";
+              wakeBadge.textContent = "Wachhalten angefordert";
               wakeBadge.className = "badge ok";
               lock.addEventListener("release", function () {
                 wakeBadge.textContent = "Sperre prüfen";
