@@ -266,7 +266,7 @@
 
     .quick-row {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
       gap: 8px;
     }
 
@@ -336,6 +336,31 @@
       font-weight: 700;
     }
 
+    .knoten-list {
+      margin: 6px 0 0 0;
+      padding: 6px 0 0 0;
+      border-top: 1px solid var(--border);
+      list-style: none;
+      display: grid;
+      gap: 4px;
+      font-size: clamp(12px, 1.9vw, 14px);
+      line-height: 1.35;
+      color: var(--muted);
+    }
+
+    .knoten-list li strong {
+      color: var(--text);
+    }
+
+    .knoten-tag {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    body.hide-knoten .knoten-list {
+      display: none;
+    }
+
     .note {
       font-size: 13px;
       color: var(--muted);
@@ -393,24 +418,50 @@
       <button type="button" class="btn-small active" data-target="840">Ziel 14:00</button>
       <button type="button" class="btn-small" data-target="900">Ziel 15:00</button>
       <button type="button" class="btn-small" id="modeBtn">Zählt hoch</button>
+      <button type="button" class="btn-small active" id="knotenBtn">Knoten: Ein</button>
     </section>
 
     <section class="phases" aria-label="Folien-Kompass">
       <div class="phase-box" id="p0">
         <div class="phase-time">00:00 - 05:00 (Richtwert)</div>
         <div class="phase-name">F1 bis F7: Drei Motive und Ziel</div>
+        <ul class="knoten-list">
+          <li><strong>F1:</strong> 2018 bis Gruppenleiter, Luft | <span class="knoten-tag">Knoten:</span> 3 Schritte</li>
+          <li><strong>F2:</strong> Ablauf in 3 Teilen | <span class="knoten-tag">Knoten:</span> Was machen wir?</li>
+          <li><strong>F3:</strong> Reise: Laser, Ofen, Trennzelle | <span class="knoten-tag">Knoten:</span> Hier entsteht Frage</li>
+          <li><strong>F4:</strong> Kollege-Frage, keine Fakten (Motiv 1) | <span class="knoten-tag">Knoten:</span> Nur Klima</li>
+          <li><strong>F5:</strong> 20-26 Grad, Logger-Alarm in Halle (Motiv 2) | <span class="knoten-tag">Knoten:</span> Wenn niemand merkt?</li>
+          <li><strong>F6:</strong> Kühlschrank Lotpaste (Motiv 3) | <span class="knoten-tag">Knoten:</span> Drei Motive</li>
+          <li><strong>F7:</strong> Ziel: misst, Ampel, alarmiert | <span class="knoten-tag">Knoten:</span> Mut, selbst bauen</li>
+        </ul>
       </div>
       <div class="phase-box" id="p1">
         <div class="phase-time">05:00 - 08:40 (Richtwert)</div>
         <div class="phase-name">F8 bis F11: Gerät, Aufbau, 22 Tage</div>
+        <ul class="knoten-list">
+          <li><strong>F8:</strong> 5 Sensoren (6 Werte), ESP32, Display, Säule | <span class="knoten-tag">Knoten:</span> Wie zusammen?</li>
+          <li><strong>F9:</strong> Alle 5 s, Ampel, WLAN/MQTT, Handy | <span class="knoten-tag">Knoten:</span> Systemtechniker?</li>
+          <li><strong>F10:</strong> Mechanik/Elektronik/IT, 1,38 K, Website | <span class="knoten-tag">Knoten:</span> Echter Betrieb</li>
+          <li><strong>F11:</strong> 22 Tage ohne Neustart, 99,995 % | <span class="knoten-tag">Knoten:</span> Was sagen Daten?</li>
+        </ul>
       </div>
       <div class="phase-box" id="p2">
         <div class="phase-time">08:40 - 10:30 (Richtwert)</div>
         <div class="phase-name">F12 bis F14: Werte, 2. Oktober, Offen</div>
+        <ul class="knoten-list">
+          <li><strong>F12:</strong> CO2 647/5'000, HCHO tief, PM 1,5/15, VOC 12 % | <span class="knoten-tag">Knoten:</span> Beim Klima...</li>
+          <li><strong>F13:</strong> Bis 2. Okt. 2/3 unter 20 Grad, nachgestellt | <span class="knoten-tag">Knoten:</span> Schon geholfen</li>
+          <li><strong>F14:</strong> 3 offen (1 Ort, warum, Kühlschrank), 15/20 | <span class="knoten-tag">Knoten:</span> Zum Live-Test</li>
+        </ul>
       </div>
       <div class="phase-box" id="p3">
         <div class="phase-time">10:30 - 14:00 (Tischkarte)</div>
         <div class="phase-name">F15 bis F17: Live-Test, Antwort, Fazit</div>
+        <ul class="knoten-list">
+          <li><strong>F15:</strong> Server live, CO2 ab 2'000 ppm, QUITT, Handy | <span class="knoten-tag">Knoten:</span> Zurück zur Frage</li>
+          <li><strong>F16:</strong> Frage beantwortet, Werte tief, Warnung da | <span class="knoten-tag">Knoten:</span> Persönliches Fazit</li>
+          <li><strong>F17:</strong> Viel gelernt, Freude, Kühlschrank, Dank | <span class="knoten-tag">Knoten:</span> Fragen</li>
+        </ul>
       </div>
     </section>
 
@@ -429,7 +480,8 @@
         startEpoch: 0,
         accumulatedMs: 0,
         targetSec: 840, // Standard 14:00 laut Tischkarte
-        viewMode: "elapsed" // "elapsed" | "remaining"
+        viewMode: "elapsed", // "elapsed" | "remaining"
+        showKnoten: true
       };
 
       var resetArmedAt = 0;
@@ -440,6 +492,7 @@
       var startBtn = document.getElementById("startBtn");
       var resetBtn = document.getElementById("resetBtn");
       var modeBtn = document.getElementById("modeBtn");
+      var knotenBtn = document.getElementById("knotenBtn");
       var wakeBadge = document.getElementById("wakeBadge");
       var statusTitle = document.getElementById("statusTitle");
       var statusSub = document.getElementById("statusSub");
@@ -472,6 +525,7 @@
             state.targetSec = parsed.targetSec;
           }
           if (parsed.viewMode === "elapsed" || parsed.viewMode === "remaining") state.viewMode = parsed.viewMode;
+          if (typeof parsed.showKnoten === "boolean") state.showKnoten = parsed.showKnoten;
         } catch (e) {}
       }
 
@@ -607,7 +661,9 @@
           statusTitle.textContent = "IM PLAN: Ruhig weitersprechen";
           statusSub.textContent = "Bis zur Live-Test-Marke (10:30) noch " + formatSec(toLive) + ".";
         }
-        document.body.className = bodyClass;
+        document.body.className = bodyClass + (state.showKnoten ? "" : " hide-knoten");
+        knotenBtn.textContent = state.showKnoten ? "Knoten: Ein" : "Knoten: Aus";
+        knotenBtn.className = state.showKnoten ? "btn-small active" : "btn-small";
 
         var activeIdx = 0;
         if (elapsedSec >= LIVE_SEC) activeIdx = 3;
@@ -679,6 +735,12 @@
 
       modeBtn.addEventListener("click", function () {
         state.viewMode = state.viewMode === "elapsed" ? "remaining" : "elapsed";
+        safeSave();
+        render();
+      });
+
+      knotenBtn.addEventListener("click", function () {
+        state.showKnoten = !state.showKnoten;
         safeSave();
         render();
       });

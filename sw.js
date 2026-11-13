@@ -1,5 +1,5 @@
 // Service Worker für den Offline-Betrieb des AQM-01 Bühnen-Timers
-const CACHE_NAME = "aqm01-timer-v2";
+const CACHE_NAME = "aqm01-timer-v3";
 const ASSETS = ["./", "./index.html", "./manifest.json", "./sw.js"];
 
 // Beim Installieren alle lokalen Dateien sicher in den Cache laden
