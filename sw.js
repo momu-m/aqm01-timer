@@ -1,5 +1,5 @@
 // Service Worker für den Offline-Betrieb des AQM-01 Bühnen-Timers
-const CACHE_NAME = "aqm01-timer-v1";
+const CACHE_NAME = "aqm01-timer-v2";
 const ASSETS = ["./", "./index.html", "./manifest.json", "./sw.js"];
 
 // Beim Installieren alle lokalen Dateien sicher in den Cache laden
@@ -31,17 +31,21 @@ self.addEventListener("activate", function (event) {
   );
 });
 
-// Anfragen zuerst aus dem Cache bedienen, sonst über das Netz laden
+// Anfragen aus dem Cache bedienen (Query-Strings ignorieren) und Navigation offline auf index.html abfangen
 self.addEventListener("fetch", function (event) {
   if (event.request.method !== "GET") {
     return;
   }
   event.respondWith(
-    caches.match(event.request).then(function (cached) {
+    caches.match(event.request, { ignoreSearch: true }).then(function (cached) {
       if (cached) {
         return cached;
       }
-      return fetch(event.request);
+      return fetch(event.request).catch(function () {
+        if (event.request.mode === "navigate") {
+          return caches.match("./index.html");
+        }
+      });
     })
   );
 });
